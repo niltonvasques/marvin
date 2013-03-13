@@ -21,6 +21,17 @@ along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 	README OF PROJECT MARVIN OS
 ========================================================
 
+
+========================================================
+	HISTORY
+========================================================
+ We named project like Marvin because I found in many places
+ talking that OS development is very sadness, hardness,
+ terrible task in Computer Science hehe. 
+ However, this can be the most fun and interactive job.
+ So Marvin is a reference of sadness robot in Book's Series
+ the hitchhiker's guide to the galaxy writed by Douglas Adams.
+
 ========================================================
 INSTRUCTIONS FOR CREATE IMAGE OF BOOTLOADER
 ========================================================
