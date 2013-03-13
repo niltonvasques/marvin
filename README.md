@@ -1,5 +1,5 @@
 This file is part of Marvin OS project.
-
+  
 Marvin OS is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -13,11 +13,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 
-*	README OF PROJECT MARVIN OS
+*	Description: Readme 
 *	Created by Nilton Vasques
 *	Email: niltonvasues@gmail.com
 *	Date 13 - 03 - 2013
-
+========================================================
+	README OF PROJECT MARVIN OS
+========================================================
 
 ========================================================
 INSTRUCTIONS FOR CREATE IMAGE OF BOOTLOADER
