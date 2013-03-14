@@ -25,11 +25,14 @@
   mov sp, 0x9c00 	; 200h past code start
   
   mov ax, 0xb800	; text video memory
+  mov es, ax
+  
+  mov si, msg		; show text string
   call sprint
   
-  mov ax, 0xb800
+  mov ax, 0xb800	; look at video memory
   mov gs, ax
-  mov bx, 0000		; 'W'=57 attrib=OF
+  mov bx, 0x0000	; 'W'=57 attrib=OF
   mov ax, [gs:bx]
   
   mov word [reg16], ax ;look at register
@@ -41,7 +44,7 @@ hang:	; loop
     
 ;------------------------------------------------------
 dochar:		call cprint	;print one character
-sprint:		lodsb
+sprint:		lodsb		; string char to AL
   cmp al, 0
   jne dochar	; else we're don
   add byte [ypos], 1
@@ -52,7 +55,7 @@ cprint:		mov ah, 0x0F	; attrib = white on black
   mov cx, ax		; save char/attribute
   movzx ax, byte [ypos]	
   mov dx, 160		; 2 bytes (char/attrib)
-  mul dx,		; for 80 columns
+  mul dx		; for 80 columns
   movzx bx, byte [xpos] 
   shl bx, 1 		; times 2 to skip attrib
   
@@ -63,6 +66,8 @@ cprint:		mov ah, 0x0F	; attrib = white on black
   mov ax, cx		; restore char/attribute
   stosw			; write char/attribute
   add byte [xpos], 1	; advance to right
+  
+  ret
   
   ;-------------------------------------------------------
   
@@ -93,7 +98,7 @@ hexloop:
   hexstr	db '0123456789ABCDEF'
   outstr16	db '0000', 0	;register value string
   reg16		dw	0	; pass values to printreg16
-  msg		db "What are you doing, Marvin?", 0    
+  msg		db "Marvin OS", 0    
     
   
   times 510-($-$$) db 0		;Say for NASM fill binary until 510 bytes 
