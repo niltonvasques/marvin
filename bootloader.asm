@@ -17,26 +17,40 @@
 ;	Author: Nilton Vasques
 ;	Date: 12 - 03 - 2013
 
-BITS 16
 
-mov ax, 07C0h
-mov ss, ax
-mov ds, ax
+;   mov ax, 0x07C0
+;Functions
+  %macro BiosPrint 1
+    mov si, word %1
+  bios_print:
+    lodsb
+    or al, al
+    jz done
+    mov ah, 0x0E ;Parameter of Interruption 10h, 0x0E print an character on screen.
+    int 0x10
+    jmp bios_print  
+  done:
+  %endmacro
+  
+    
+  [ORG 0x7c00]
+  
+  xor ax, ax
+  mov ds, ax
+  
+  BiosPrint msg
 
-mov si, Msg
-mov ah, 0Eh
-jmp repetir
-
-Msg db 'Marvin OS v0.1!', 0
-
-repetir:
-lodsb
-cmp al, 0
-je fim
-int 10h
-jmp repetir
-
-fim:
-jmp $
-times 510-($-$$) db 0
-dw 0xAA55
+  ;Loop 
+  hang:
+    jmp hang
+  
+  msg	db '>>> Welcome to Marvin <<<', 13, 10, 0
+    
+    
+  ;Say for NASM fill binary until 510 bytes
+  times 510-($-$$) db 0
+  ;Bytes 510 and 511 are sign of bootsector and need has this values
+  db 0x55
+  db 0xAA
+  
+  
