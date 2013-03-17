@@ -24,6 +24,9 @@
 [bits 16]
 [org 0x1000]
       jmp start
+      
+%include "libio16.inc"
+%include "libstr.inc"
 ;--------------------------------------------------------------------------------
 ;	2- LOAD SEGMENT REGISTERS
 ;--------------------------------------------------------------------------------
@@ -39,12 +42,53 @@ start:
       
 ;       MACRO_CLEAR_SCREEN
 ;       MACRO_PRINT32 welcome
-      MACRO_PRINT16 welcome
+;       MACRO_PRINT32 welcome
+mainloop:
+      MACRO_PRINT16 prompt
       
-      jmp $
+      mov di, buffer
+      call get_string16
+      
+      mov si, buffer
+      cmp byte [si], 0  ; blank line?
+      je mainloop       ; yes, ignore it
+      
+      mov si, buffer
+      mov di, cmd_version
+      call strcmp
+      jc .cmd_version_triggered
+      
+      mov si, buffer
+      mov di, cmd_pmode
+      call strcmp
+      jc .cmd_pmode_triggered      
+      
+      call .cmd_bad_input_triggered
+      
+      jmp mainloop     
+      
+.cmd_version_triggered:
+      MACRO_PRINT16 cmd_version_msg
+      jmp mainloop
+      
+.cmd_pmode_triggered:
+      MACRO_PRINT16 cmd_pmode_msg
+      jmp mainloop
+      
+.cmd_bad_input_triggered:
+      MACRO_PRINT16 buffer
+      MACRO_PRINT16 cmd_bad_input_msg
+      jmp mainloop   
       
       
       welcome db 'Welcome to Marvin OS bootstage 2', 13, 10, 0
+      prompt db '>', 0
+      buffer times 64 db 0
+      cmd_version db 'version', 0
+      cmd_version_msg db 'Marvin OS v0.01',13,10,'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.',13,10, 'This is free software: you are free to change and redistribute it.',13,10, 'There is NO WARRANTY, to the extent permitted by law.',13,10, 'Written by Nilton Vasques<niltonvasques@gmail.com>',13,10,0      
+      cmd_pmode db 'pmode', 0
+      cmd_pmode_msg db 'Switching to protected mode', 13,10,0
+      cmd_bad_input_msg db ': command not found',13,10,0      
       
-      times 510-($-$$) db 0
-      dw 0xAA55
+      
+      times 1024-($-$$) db 0
