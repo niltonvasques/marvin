@@ -19,7 +19,7 @@
 
   ;;This macro print a text on screen
   ;; Arg 1 is a text string
-%macro MACRO_PRINT 1
+%macro MACRO_PRINT32 1
 
 	    mov si, word %1  
 	    mov ax, 0xb800	; text video memory
@@ -50,11 +50,29 @@
 	    
 	    mov ax, cx		; restore char/attribute
 	    stosw			; write char/attribute
-	    add byte [xpos], 1	; advance to right
+	    add byte [xpos], 1	; adv32ance to right
 	    
 	    ret
       %%print_done:
 %endmacro
+
+%macro MACRO_PRINT16 1
+	    mov si, word %1
+      %%print_string:
+	    lodsb       ; grab a byte from SI
+	    
+	    or al, al  ; logical or AL by itself
+	    jz %%done   ; if the result is zero, get out
+	    
+	    mov ah, 0x0E
+	    int 0x10      ; otherwise, print out the character!
+	    
+	    jmp %%print_string
+      %%done:
+%endmacro
+
+      ypos 		db 0
+      xpos 		db 0
   
   ;;This macro clear all characters on screen
 %macro MACRO_CLEAR_SCREEN 0   
