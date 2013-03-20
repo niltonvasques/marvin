@@ -93,7 +93,7 @@ reset_floppy:
       mov es, bx 
       mov bx, SECOND_STAGE_ADRESS	;boot1 must load in 0x1000 address
       
-      mov al, 0x02
+      mov al, 0x04
       mov ch, 0x00
       mov cl, 0x02
       mov dh, 0x00
