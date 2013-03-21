@@ -14,9 +14,12 @@ You should have received a copy of the GNU General Public License
 along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 
 *	Description: Readme 
-*	Created by Nilton Vasques
-*	Email: niltonvasues@gmail.com
-*	Date 13 - 03 - 2013
+*	Colaborators:
+*
+*	Nilton Vasques<niltonvasues@gmail.com>
+* 	Carlos Marx<cmarxna@gmail.com>
+*
+*	Created in 13-03-2013
 
 ========================================================
 README OF PROJECT MARVIN OS
