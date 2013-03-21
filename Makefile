@@ -34,8 +34,5 @@ mkbin:
 clean:
 	rm -fr bin/
 
-run-deb:
-	qemu -fda bin/boot.img
-
-run-ubt:
+run:
 	qemu-system-x86_64 -fda bin/boot.img
