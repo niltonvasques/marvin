@@ -76,12 +76,17 @@ mainloop:
       mov si, buffer
       mov di, cmd_die
       call strcmp
-      jc .cmd_die_triggered
+      jc .cmd_die_triggered      
       
       mov si, buffer
       mov di, cmd_ram
       call strcmp
       jc .cmd_ram_triggered
+      
+      mov si, buffer
+      mov di, cmd_a20
+      call strcmp
+      jc .cmd_a20_switch_triggered
       
       call .cmd_bad_input_triggered
       
@@ -128,6 +133,27 @@ mainloop:
       MACRO_PRINT16 cmd_ram_msg
       jmp mainloop
       
+.cmd_a20_switch_triggered:
+      mov ax, 2402h
+      int 15h
+      jc .error_a20_gate
+      cmp al, 1
+      jne .a20_enable
+      mov ax, 2400h
+      int 15h
+      jc .error_a20_gate
+      MACRO_PRINT16 cmd_a20_disabled
+      jmp .cmd_a20_done
+      .a20_enable:
+	    mov ax, 2401h
+	    int 15h
+	    jc .error_a20_gate
+	    MACRO_PRINT16 cmd_a20_enabled
+	    jmp .cmd_a20_done
+      .error_a20_gate:
+	    MACRO_PRINT16 cmd_a20_error
+      .cmd_a20_done:
+	    jmp mainloop
       
       welcome 			db 'Welcome to Marvin OS bootstage 2', 13, 10, 0
       prompt 			db '>', 0
@@ -145,6 +171,10 @@ mainloop:
       cmd_ram			db 'ram',0
       cmd_ram_msg		db ' KB of lower memory ram!',13,10,0
       cmd_apm_error	 	db 'Error: BIOS not supported APM (Advanced Power Management)',13,10,0
+      cmd_a20 			db 'a20', 0
+      cmd_a20_enabled		db 'A20 Gate enabled', 13,10,0
+      cmd_a20_disabled		db 'A20 Gate disabled', 13,10,0
+      cmd_a20_error	 	db 'Error: A20 Gate switch for BIOS not supported',13,10,0
       
       
       times 2048-($-$$) db 0

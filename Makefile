@@ -15,8 +15,9 @@
 
 #	Description: Makefile.
 #	Author: Carlos Marx
+#	Author: Nilton Vasques
 #	Date: 20 - 03 - 2013
-
+#
 all: boot.img
 
 boot.img: boot0.bin boot1.bin
@@ -32,7 +33,10 @@ mkbin:
 	mkdir bin/
 
 clean:
-	rm -fr bin/
+	rm -fr bin/ src/boot/*~ src/kernel/*~ *~
+
+kernel:
+	i586-elf-gcc -o bin/kernel.o -c src/kernel/kernel.c -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
 
 run:
 	qemu-system-x86_64 -fda bin/boot.img
