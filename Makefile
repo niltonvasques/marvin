@@ -17,21 +17,25 @@
 #	Author: Carlos Marx
 #	Date: 20 - 03 - 2013
 
-QUEMU = "qemu-system-x86_64 -fda"
+all: boot.img
 
-all: marvin.img
-
-marvin.img: boot0.bin boot1.bin
+boot.img: boot0.bin boot1.bin
 	cat bin/boot0.bin bin/boot1.bin > bin/boot.img
 
-boot0.bin:
+boot0.bin: mkbin
 	nasm src/boot/boot0.asm -f bin -I src/boot/ -o bin/boot0.bin
 
-boot1.bin:
+boot1.bin: mkbin
 	nasm src/boot/boot1.asm -f bin -I src/boot/ -o bin/boot1.bin
 
-clean:
-	rm -fr *~ *.bin *.img
+mkbin:
+	mkdir bin/
 
-run: all
-	$QUEMU bin/boot.img
+clean:
+	rm -fr bin/
+
+run-deb:
+	qemu -fda bin/boot.img
+
+run-ubt:
+	qemu-system-x86_64 -fda bin/boot.img
