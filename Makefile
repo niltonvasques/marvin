@@ -13,10 +13,26 @@
 #You should have received a copy of the GNU General Public License
 #along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 
-#	Description: Script for clean temporary files, that are created for text editors.
-#	Author: Nilton Vasques
-#	Date: 15 - 03 - 2013
-#!/bin/bash
+#	Description: Makefile.
+#	Author: Carlos Marx
+#	Date: 20 - 03 - 2013
 
-echo "Delete temporaty files ended with *.*~........"
-rm *.*~
+all: boot.img
+
+boot.img: boot0.bin boot1.bin
+	cat bin/boot0.bin bin/boot1.bin > bin/boot.img
+
+boot0.bin: mkbin
+	nasm src/boot/boot0.asm -f bin -I src/boot/ -o bin/boot0.bin
+
+boot1.bin: mkbin
+	nasm src/boot/boot1.asm -f bin -I src/boot/ -o bin/boot1.bin
+
+mkbin:
+	mkdir bin/
+
+clean:
+	rm -fr bin/
+
+run:
+	qemu-system-x86_64 -fda bin/boot.img
