@@ -19,18 +19,9 @@
 #
 #!bin/bash
 
-OS=$(lsb_release -si)
-apt_cmd='aptitude'
-echo 'Checking Linux distro...'
-if [ $OS == 'Ubuntu' ];	
-	then
-	apt_cmd='apt-get'
-fi
 export PREFIX=/usr/local/cross
 export TARGET=i586-elf
-$apt_cmd install libgmp3-dev
-$apt_cmd install libmpc-dev
-$apt_cmd install libmpfr-dev
+
 cd /usr/src
 echo 'Creating directories for toolchain Naked GCC Cross Compiler'
 mkdir build-binutils build-gcc
