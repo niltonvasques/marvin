@@ -14,7 +14,7 @@
 #along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 
 #	Description: Script for setup an Cross Compiler to i586 machines
-#	Author: Nilton Vasques
+#	Author: Nilton Vasques, Caio Lima
 #	Date: 21 - 03 - 2013
 #
 #!bin/bash
@@ -32,11 +32,13 @@ cd /usr/src/build-binutils
 ../binutils-2.22/configure --target=$TARGET --prefix=$PREFIX --disable-nls
 make all
 make install
+
+cd /usr/src/build-gcc
 echo 'Downloading gcc-core'
 wget http://ftp.gnu.org/gnu/gcc/gcc-4.6.3/gcc-core-4.6.3.tar.gz
 echo 'Extracting gcc-core'
 tar -xvf gcc-core-4.6.3.tar.gz
-cd /usr/src/build-gcc
+
 ../gcc-4.6.3/configure --target=$TARGET --prefix=$PREFIX --disable-nls --enable-languages=c --without-headers
 make all-gcc
 make install-gcc
