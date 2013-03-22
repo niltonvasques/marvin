@@ -19,8 +19,18 @@
 #
 #!bin/bash
 
+OS=$(lsb_release -si)
+apt_cmd='aptitude'
+echo 'Checking Linux distro...'
+if [ $OS == 'Ubuntu' ];	
+	then
+	apt_cmd='apt-get'
+fi
 export PREFIX=/usr/local/cross
 export TARGET=i586-elf
+$apt_cmd install libgmp3-dev
+$apt_cmd install libmpc-dev
+$apt_cmd install libmpfr-dev
 cd /usr/src
 echo 'Creating directories for toolchain Naked GCC Cross Compiler'
 mkdir build-binutils build-gcc
@@ -32,6 +42,7 @@ cd /usr/src/build-binutils
 ../binutils-2.22/configure --target=$TARGET --prefix=$PREFIX --disable-nls
 make all
 make install
+cd /usr/src
 echo 'Downloading gcc-core'
 wget http://ftp.gnu.org/gnu/gcc/gcc-4.6.3/gcc-core-4.6.3.tar.gz
 echo 'Extracting gcc-core'
