@@ -16,14 +16,17 @@ along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 *	Description: Readme 
 *	Colaborators:
 *
-*	Nilton Vasques<niltonvasues@gmail.com>
-* 	Carlos Marx<cmarxna@gmail.com>
+*	Nilton Vasques	<niltonvasues@gmail.com>
+* 	Carlos Marx	<cmarxna@gmail.com>
+*	Caio Lima	<ticaiolima@gmail.com>
 *
 *	Created in 13-03-2013
 
 ========================================================
 README OF PROJECT MARVIN OS
 ========================================================
+
+Mailing list: marvin-os-dev@googlegroups.com
 
 
 ========================================================
@@ -39,16 +42,11 @@ HISTORY
 ========================================================
 INSTRUCTIONS FOR CREATE IMAGE OF BOOTLOADER
 ========================================================
-==> Creating an image of a disket file empty 
-mkdosfs -C meuos.flp 1440
+-> Compile
+	make
+-> Execute
+	make run
+-> Clean
+	make clean
 
-==> Write bootloader.bin in disket image (FLP)
-dd status=noxfer conv=notrunc if=meuos.bin of=meuos.flp
 
-==> Testing if all are ok and works fine
-qemu meuos.flp OR some cases use qemu-system-x86_64 meuos.flp
-
-==> Create a ISO image of OS
-mkiso -V 'meuos' -input-charset iso8859-1 -o disco/meuos.iso -b meuos.flp disco/
-
-==> With ISO image you can load in VirtualBox and boot from ISO Image for testing the system
