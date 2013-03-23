@@ -19,14 +19,11 @@
 ;--------------------------------------------------------------------------------
 ;	1- CANONICALIZING ADDRESS 0X7C00
 ;--------------------------------------------------------------------------------
-%include "macros_io.inc"
 
 [bits 16]
 [org 0x1000]
       jmp start
       
-%include "libio16.inc"
-%include "libstr.inc"
 ;--------------------------------------------------------------------------------
 ;	2- LOAD SEGMENT REGISTERS
 ;--------------------------------------------------------------------------------
@@ -39,74 +36,82 @@ start:
       mov sp, ax       
       sti
       
+;--------------------------------------------------------------------------------
+;	3- MAIN LOOP - PROMPT
+;--------------------------------------------------------------------------------
       
-;       MACRO_CLEAR_SCREEN
-;       MACRO_PRINT32 welcome
-;       MACRO_PRINT32 welcome
 mainloop:
-      MACRO_PRINT16 prompt
+      mov bx, PROMPT
+      call print_string_16
       
-      mov di, buffer
+      mov di, BUFFER
       call get_string16
       
-      mov si, buffer
+      mov si, BUFFER
       cmp byte [si], 0  ; blank line?
       je mainloop       ; yes, ignore it
       
-      mov si, buffer
-      mov di, cmd_version
+      mov si, BUFFER
+      mov di, CMD_VERSION
       call strcmp
       jc .cmd_version_triggered
       
-      mov si, buffer
-      mov di, cmd_pmode
+      mov si, BUFFER
+      mov di, CMD_PMODE
       call strcmp
-      jc .cmd_pmode_triggered      
+      jc .cmode_pmode_triggered      
       
-      mov si, buffer
-      mov di, cmd_help
+      mov si, BUFFER
+      mov di, CMD_HELP
       call strcmp
       jc .cmd_help_triggered
       
-      mov si, buffer
-      mov di, cmd_suicide
+      mov si, BUFFER
+      mov di, CMD_SUICIDE
       call strcmp
       jc .cmd_suicide_triggered
       
-      mov si, buffer
-      mov di, cmd_die
+      mov si, BUFFER
+      mov di, CMD_DIE
       call strcmp
       jc .cmd_die_triggered      
       
-      mov si, buffer
-      mov di, cmd_ram
+      mov si, BUFFER
+      mov di, CMD_RAM
       call strcmp
       jc .cmd_ram_triggered
       
-      mov si, buffer
-      mov di, cmd_a20
+      mov si, BUFFER
+      mov di, CMD_A20
       call strcmp
       jc .cmd_a20_switch_triggered
       
       call .cmd_bad_input_triggered
       
       jmp mainloop     
-      
+
+;--------------------------------------------------------------------------------
+;	HANDLERS FOR COMMANDS TRIGGERED
+;--------------------------------------------------------------------------------
 .cmd_version_triggered:
-      MACRO_PRINT16 cmd_version_msg
+      mov bx, CMD_VERSION_msg
+      call print_string_16 
       jmp mainloop
       
-.cmd_pmode_triggered:
-      MACRO_PRINT16 cmd_pmode_msg
-      jmp mainloop
+.cmode_pmode_triggered:
+      call switch_to_pm
+      jmp $
       
 .cmd_bad_input_triggered:
-      MACRO_PRINT16 buffer
-      MACRO_PRINT16 cmd_bad_input_msg
+      mov bx, BUFFER      
+      call print_string_16 
+      mov bx, CMD_BAD_INPUT_MSG
+      call print_string_16 
       jmp mainloop
       
 .cmd_help_triggered:
-      MACRO_PRINT16 cmd_help_msg
+      mov bx, CMD_HELP_MSG
+      call print_string_16 
       jmp mainloop
 
 .cmd_suicide_triggered:
@@ -123,14 +128,17 @@ mainloop:
       jc .cmd_apm_error_triggered
       
 .cmd_apm_error_triggered:
-      MACRO_PRINT16 cmd_apm_error
+      mov bx, CMD_APM_ERROR
+      call print_string_16 
       jmp mainloop
 
 .cmd_ram_triggered:
       int 12h      
       call bin2ascii
-      MACRO_PRINT16 outbin2ascii
-      MACRO_PRINT16 cmd_ram_msg
+      mov bx, outbin2ascii
+      call print_string_16 
+      mov bx, CMD_RAM_MSG
+      call print_string_16 
       jmp mainloop
       
 .cmd_a20_switch_triggered:
@@ -142,39 +150,73 @@ mainloop:
       mov ax, 2400h
       int 15h
       jc .error_a20_gate
-      MACRO_PRINT16 cmd_a20_disabled
+      mov bx, CMD_A20_DISABLED
+      call print_string_16 
       jmp .cmd_a20_done
       .a20_enable:
 	    mov ax, 2401h
 	    int 15h
 	    jc .error_a20_gate
-	    MACRO_PRINT16 cmd_a20_enabled
+	    mov bx, CMD_A20_ENABLED
+	    call print_string_16 
 	    jmp .cmd_a20_done
       .error_a20_gate:
-	    MACRO_PRINT16 cmd_a20_error
+	    mov bx, CMD_A20_ERROR
+	    call print_string_16 
       .cmd_a20_done:
 	    jmp mainloop
+
+;--------------------------------------------------------------------------------
+;	INCLUDES
+;--------------------------------------------------------------------------------
+%include "libio16.inc"
+%include "libstr.inc"
+%include "libmode.inc"
+%include "libgdt.inc"
+%include "libio32.inc"
+
+;--------------------------------------------------------------------------------
+;	INIT 32-BIT CODE IN PROTECTED MODE
+;--------------------------------------------------------------------------------
+[bits 32]
       
-      welcome 			db 'Welcome to Marvin OS bootstage 2', 13, 10, 0
-      prompt 			db '>', 0
-      buffer 			times 64 db 0
-      cmd_version 		db 'version', 0
-      cmd_version_msg 		db 'Marvin OS v0.01',13,10,'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.',13,10, 'This is free software: you are free to change and redistribute it.',13,10, 'There is NO WARRANTY, to the extent permitted by law.',13,10, 'Written by Nilton Vasques<niltonvasques@gmail.com>',13,10,0      
-      cmd_help			db 'help', 0
-      cmd_help_msg		db 'MSBB - Marvin Sad Bootloader Bash, version 0.01',13,10,'The bash more sadder of world!',13,10,'These commands are defined internally.',13,10,13,10,'Commands list:',13,10,'die',13,10,'suicide',13,10,'ram',13,10,'init',13,10,'version',13,10,'pmode',13,10,'help',13,10,0
-      cmd_pmode 		db 'pmode', 0
-      cmd_pmode_msg 		db 'Switching to protected mode', 13,10,0
-      cmd_bad_input_msg		db ': command not found',13,10,0      
-      cmd_suicide 		db 'suicide', 0
-      cmd_die 			db 'die', 0
-      cmd_init			db 'init',0
-      cmd_ram			db 'ram',0
-      cmd_ram_msg		db ' KB of lower memory ram!',13,10,0
-      cmd_apm_error	 	db 'Error: BIOS not supported APM (Advanced Power Management)',13,10,0
-      cmd_a20 			db 'a20', 0
-      cmd_a20_enabled		db 'A20 Gate enabled', 13,10,0
-      cmd_a20_disabled		db 'A20 Gate disabled', 13,10,0
-      cmd_a20_error	 	db 'Error: A20 Gate switch for BIOS not supported',13,10,0
+BEGIN_PM:
+      mov ebx, MSG_PROT_MODE
+      call print_string_32
       
+      jmp $
+      
+;--------------------------------------------------------------------------------
+;	GLOBAL VARIABLES
+;--------------------------------------------------------------------------------
+
+      MSG_PROT_MODE		db "Sucessfully landed in 32-bit Protected Mode", 0
+      BOOT_DRIVE 		db 0
+      WELCOME_MSBB_STAGE_2	db 'Welcome to Marvin OS bootstage 2', 13, 10, 0
+      PROMPT 			db '>', 0
+      BUFFER 			times 64 db 0
+      CMD_VERSION 		db 'version', 0
+      CMD_VERSION_msg 		db 'Marvin OS v0.01',13,10,'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.',13,10, 'This is free software: you are free to change and redistribute it.',13,10, 'There is NO WARRANTY, to the extent permitted by law.',13,10, 'Written by Nilton Vasques<niltonvasques@gmail.com>',13,10,0      
+      CMD_HELP			db 'help', 0
+      CMD_HELP_MSG		db 'MSBB - Marvin Sad Bootloader Bash, version 0.01',13,10,'The bash more sadder of world!',13,10,'These commands are defined internally.',13,10,13,10,'Commands list:',13,10,'die',13,10,'suicide',13,10,'ram',13,10,'a20',13,10,'init',13,10,'version',13,10,'pmode',13,10,'help',13,10,0
+      CMD_PMODE 		db 'pmode', 0
+      CMD_PMODE_MSG 		db 'Switching to protected mode', 13,10,0
+      CMD_BAD_INPUT_MSG		db ': command not found',13,10,0      
+      CMD_SUICIDE 		db 'suicide', 0
+      CMD_DIE 			db 'die', 0
+      CMD_INIT			db 'init',0
+      CMD_RAM			db 'ram',0
+      CMD_RAM_MSG		db ' KB of lower memory ram!',13,10,0
+      CMD_APM_ERROR	 	db 'Error: BIOS not supported APM (Advanced Power Management)',13,10,0
+      CMD_A20 			db 'a20', 0
+      CMD_A20_ENABLED		db 'A20 Gate enabled', 13,10,0
+      CMD_A20_DISABLED		db 'A20 Gate disabled', 13,10,0
+      CMD_A20_ERROR	 	db 'Error: A20 Gate switch for BIOS not supported',13,10,0
+
+;--------------------------------------------------------------------------------
+;	FILL FILE IN 2 KB 
+;	Because each sector of floppy disk contains 512 bytes
+;	Thus confident that all bytes will be writed on image
+;--------------------------------------------------------------------------------
       
       times 2048-($-$$) db 0
