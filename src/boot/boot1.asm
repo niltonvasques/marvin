@@ -59,7 +59,7 @@ mainloop:
       mov si, BUFFER
       mov di, CMD_PMODE
       call strcmp
-      jc .cmode_pmode_triggered      
+      jc .cmd_pmode_triggered      
       
       mov si, BUFFER
       mov di, CMD_HELP
@@ -98,8 +98,12 @@ mainloop:
       call print_string_16 
       jmp mainloop
       
-.cmode_pmode_triggered:
-      call switch_to_pm
+.cmd_pmode_triggered:
+      call switch_to_pm		; This functions only returns if erros occurrs
+      
+      mov bx, CMD_PMODE_ERROR
+      call print_string_16
+      
       jmp $
       
 .cmd_bad_input_triggered:
@@ -142,28 +146,24 @@ mainloop:
       jmp mainloop
       
 .cmd_a20_switch_triggered:
-      mov ax, 2402h
-      int 15h
+      call a20_status
       jc .error_a20_gate
       cmp al, 1
-      jne .a20_enable
-      mov ax, 2400h
-      int 15h
-      jc .error_a20_gate
-      mov bx, CMD_A20_DISABLED
-      call print_string_16 
-      jmp .cmd_a20_done
-      .a20_enable:
-	    mov ax, 2401h
-	    int 15h
+      jne .enable
+      .disable:
+	    call a20_disable
+	    jc .error_a20_gate
+	    mov bx, CMD_A20_DISABLED 
+	    jmp .cmd_a20_done
+      .enable:
+	    call a20_enable
 	    jc .error_a20_gate
 	    mov bx, CMD_A20_ENABLED
-	    call print_string_16 
 	    jmp .cmd_a20_done
       .error_a20_gate:
 	    mov bx, CMD_A20_ERROR
-	    call print_string_16 
-      .cmd_a20_done:
+      .cmd_a20_done:	    
+	    call print_string_16
 	    jmp mainloop
 
 ;--------------------------------------------------------------------------------
@@ -171,6 +171,7 @@ mainloop:
 ;--------------------------------------------------------------------------------
 %include "libio16.inc"
 %include "libstr.inc"
+%include "liba20.inc"
 %include "libmode.inc"
 %include "libgdt.inc"
 %include "libio32.inc"
@@ -181,8 +182,9 @@ mainloop:
 [bits 32]
       
 BEGIN_PM:
+      call clear_screen_32
       mov ebx, MSG_PROT_MODE
-      call print_string_32
+      call print_string_32   
       
       jmp $
       
@@ -201,6 +203,7 @@ BEGIN_PM:
       CMD_HELP_MSG		db 'MSBB - Marvin Sad Bootloader Bash, version 0.01',13,10,'The bash more sadder of world!',13,10,'These commands are defined internally.',13,10,13,10,'Commands list:',13,10,'die',13,10,'suicide',13,10,'ram',13,10,'a20',13,10,'init',13,10,'version',13,10,'pmode',13,10,'help',13,10,0
       CMD_PMODE 		db 'pmode', 0
       CMD_PMODE_MSG 		db 'Switching to protected mode', 13,10,0
+      CMD_PMODE_ERROR	 	db 'Error: A20 Gate switch for BIOS not supported',13,10,0
       CMD_BAD_INPUT_MSG		db ': command not found',13,10,0      
       CMD_SUICIDE 		db 'suicide', 0
       CMD_DIE 			db 'die', 0

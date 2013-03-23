@@ -18,7 +18,7 @@
 #	Author: Nilton Vasques
 #	Date: 20 - 03 - 2013
 #
-all: boot.img
+all: clean boot.img
 
 boot.img: boot0.bin boot1.bin
 	cat bin/boot0.bin bin/boot1.bin > bin/boot.img

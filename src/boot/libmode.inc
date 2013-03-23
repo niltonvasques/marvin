@@ -20,6 +20,9 @@
 
 [bits 16]
 switch_to_pm:
+      call a20_enable				; Enabling A20 gate for ensure that all memory can be acessed
+      jc .error					; Checking errors occurred
+      
       cli 					; We must switch of interrupts until we have
 						; set - up the protected mode interrupt vector
 						; otherwise interrupts will run riot.
@@ -36,6 +39,9 @@ switch_to_pm:
 						; performed wrong. 
 
 						; So solution is execute a far jump, for flush pipeline      
+      .error:
+	    ret
+	    
 [bits 32]
       
 start_protected_mode:
@@ -44,7 +50,7 @@ start_protected_mode:
       mov ss, ax		; data selector we defined in our GDT
       mov es, ax
       mov fs, ax
-      mov fs, ax
+      mov gs, ax
       
       mov ebp, 0x90000	; Update our stack position so it is right
       mov esp, ebp	; at the top of the free space.      
