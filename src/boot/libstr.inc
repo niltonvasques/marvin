@@ -43,7 +43,7 @@ hex2str:
       mov ax, [reg16]
       mov si, hexstr
       mov cx, 4		; four places
-hexloop:
+.hexloop:
       rol ax, 4		; leftmost will
       mov bx, ax		; become
       and bx, 0x0F		; rightmost
@@ -51,7 +51,7 @@ hexloop:
       mov [di], bl		
       inc di
       dec cx
-      jnz hexloop  
+      jnz .hexloop
       
       ret
       

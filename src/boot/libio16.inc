@@ -97,17 +97,47 @@ print_string:
 .done:
       ret
       
+;--------------------------------------------------------------------------------
+;	Function PRINT REGISTER 16-bit
+;	params:
+;	AX = CONTENT PRINTED
+;--------------------------------------------------------------------------------       
+print_reg_16:
+;       mov di, outstr16
+      mov si, HEXSTR
+      mov cx, 4		; four places
+hexloop:
+      rol ax, 4		; leftmost will
+      mov bx, ax		; become
+      and bx, 0x0F		; rightmost
+      mov bl, [si + bx]	; index into hexstr
+      mov al, bl
       
+      mov ah, 0x0E
+      int 0x10
+      
+;       inc di
+      dec cx
+      jnz hexloop  
+      
+;       mov si, outstr16
+;       call print_string
+      ret
+      
+   HEXSTR db '0123456789ABCDEF', 0
+   
 ;--------------------------------------------------------------------------------
 ;	Function DISK LOAD - Load sectors of disk and transfer to memory
 ;	params:
 ;	BX = offset of memory address
 ;	dh = number of sectors of disk to be load
 ;	dl = disk drive number
+;	cl = start sector
 ;-------------------------------------------------------------------------------- 
 disk_load:
       push dx
       disk_reset:
+	    push cx
 	    mov ah, 0
 	    int 0x13      
 	    jc disk_error
@@ -118,9 +148,9 @@ disk_load:
 	    mov es, bx
 	    pop bx
 	    
+	    pop cx
 	    mov al, dh
 	    mov ch, 0x00
-	    mov cl, 0x02
 	    mov dh, 0x00
 	    mov ah, 0x02
 	    

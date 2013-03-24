@@ -59,6 +59,7 @@ start:
 ;	dl = disk drive number
       mov dl, [BOOT_DRIVE]
       mov dh, 4
+      mov cl, 0x02
       mov bx, SECOND_STAGE_ADRESS
       call disk_load
       

@@ -22,18 +22,26 @@
 
 [bits 16]
 [org 0x1000]
+
+      KERNEL_OFFSET 		equ 0x2000      
+      KERNEL_START_SECTOR	equ 0x06
+      KERNEL_N_SECTORS		equ 0x0F
+      BOOT_DRIVE		equ 0x00
+      
       jmp start
       
 ;--------------------------------------------------------------------------------
 ;	2- LOAD SEGMENT REGISTERS
 ;--------------------------------------------------------------------------------
 start:
+      
       cli
       xor ax, ax	
+      mov [BOOT_DRIVE], ax 	; Floppy drive
       mov ss, ax 		; stack starts at 0
       mov ds, ax		; set to data segment where we are loader
-      mov sp, 0x9c00 		; 200h past code start      
-      mov sp, ax       
+      mov bp, 0x9000 		; 200h past code start      
+      mov sp, bp       
       sti
       
 ;--------------------------------------------------------------------------------
@@ -82,13 +90,23 @@ mainloop:
       jc .cmd_ram_triggered
       
       mov si, BUFFER
+      mov di, CMD_KERNEL
+      call strcmp
+      jc .cmd_kernel_triggered
+      
+      mov si, BUFFER
+      mov di, CMD_INIT
+      call strcmp
+      jc .cmd_init_triggered
+      
+      mov si, BUFFER
       mov di, CMD_A20
       call strcmp
       jc .cmd_a20_switch_triggered
       
       call .cmd_bad_input_triggered
       
-      jmp mainloop     
+      jmp mainloop  
 
 ;--------------------------------------------------------------------------------
 ;	HANDLERS FOR COMMANDS TRIGGERED
@@ -165,6 +183,31 @@ mainloop:
       .cmd_a20_done:	    
 	    call print_string_16
 	    jmp mainloop
+	    
+.cmd_kernel_triggered:
+      mov bx, CMD_KERNEL_MSG
+      call print_string_16     
+      call load_kernel
+      jmp mainloop
+      
+.cmd_init_triggered:
+      call load_kernel
+      call switch_to_pm
+      jmp $
+      
+load_kernel:      
+      mov bx, KERNEL_OFFSET
+      mov dh, KERNEL_N_SECTORS
+      mov dl, BOOT_DRIVE
+      mov cl, KERNEL_START_SECTOR
+      call disk_load
+      
+      xor ax, ax	; Store status
+      mov ax, [CMD_STATUS]
+      or ax, 01b
+      mov [CMD_STATUS], ax
+      ret
+      
 
 ;--------------------------------------------------------------------------------
 ;	INCLUDES
@@ -184,8 +227,15 @@ mainloop:
 BEGIN_PM:
       call clear_screen_32
       mov ebx, MSG_PROT_MODE
-      call print_string_32   
+      call print_string_32  
       
+      xor ax, ax
+      mov ax, [CMD_STATUS]
+      cmp ax, 01b
+      jne hang
+      call KERNEL_OFFSET
+      
+hang:
       jmp $
       
 ;--------------------------------------------------------------------------------
@@ -193,14 +243,13 @@ BEGIN_PM:
 ;--------------------------------------------------------------------------------
 
       MSG_PROT_MODE		db "Sucessfully landed in 32-bit Protected Mode", 0
-      BOOT_DRIVE 		db 0
       WELCOME_MSBB_STAGE_2	db 'Welcome to Marvin OS bootstage 2', 13, 10, 0
       PROMPT 			db '>', 0
       BUFFER 			times 64 db 0
       CMD_VERSION 		db 'version', 0
       CMD_VERSION_msg 		db 'Marvin OS v0.01',13,10,'License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.',13,10, 'This is free software: you are free to change and redistribute it.',13,10, 'There is NO WARRANTY, to the extent permitted by law.',13,10, 'Written by Nilton Vasques<niltonvasques@gmail.com>',13,10,0      
       CMD_HELP			db 'help', 0
-      CMD_HELP_MSG		db 'MSBB - Marvin Sad Bootloader Bash, version 0.01',13,10,'The bash more sadder of world!',13,10,'These commands are defined internally.',13,10,13,10,'Commands list:',13,10,'die',13,10,'suicide',13,10,'ram',13,10,'a20',13,10,'init',13,10,'version',13,10,'pmode',13,10,'help',13,10,0
+      CMD_HELP_MSG		db 'MSBB - Marvin Sad Bootloader Bash, version 0.01',13,10,'The bash more sadder of world!',13,10,'These commands are defined internally.',13,10,13,10,'Commands list:',13,10,'die',13,10,'suicide',13,10,'ram',13,10,'a20',13,10,'init',13,10,'kernel',13,10,'version',13,10,'pmode',13,10,'help',13,10,0
       CMD_PMODE 		db 'pmode', 0
       CMD_PMODE_MSG 		db 'Switching to protected mode', 13,10,0
       CMD_PMODE_ERROR	 	db 'Error: A20 Gate switch for BIOS not supported',13,10,0
@@ -215,6 +264,9 @@ BEGIN_PM:
       CMD_A20_ENABLED		db 'A20 Gate enabled', 13,10,0
       CMD_A20_DISABLED		db 'A20 Gate disabled', 13,10,0
       CMD_A20_ERROR	 	db 'Error: A20 Gate switch for BIOS not supported',13,10,0
+      CMD_KERNEL 		db 'kernel', 0
+      CMD_KERNEL_MSG		db " Loading kernel into memory. " , 13,10, 0
+      CMD_STATUS		db 00b ;First bit = protected mode, second bit = kernel loaded
 
 ;--------------------------------------------------------------------------------
 ;	FILL FILE IN 2 KB 

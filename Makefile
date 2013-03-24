@@ -18,25 +18,47 @@
 #	Author: Nilton Vasques
 #	Date: 20 - 03 - 2013
 #
-all: clean boot.img
 
-boot.img: boot0.bin boot1.bin
-	cat bin/boot0.bin bin/boot1.bin > bin/boot.img
+#Instructions
+# $ ^ is substituted with all of the target ’ s dependancy files
+# $ < is the first dependancy and $@ is the target files
 
-boot0.bin: mkbin
-	nasm src/boot/boot0.asm -f bin -I src/boot/ -o bin/boot0.bin
 
-boot1.bin: mkbin
-	nasm src/boot/boot1.asm -f bin -I src/boot/ -o bin/boot1.bin
+all: mkbin boot.img
+	
+run: all
+	qemu-system-x86_64 -fda bin/boot.img
+
+boot.img: bin/boot0.bin bin/boot1.bin bin/kernel.bin bin/pad
+	cat $^ > bin/boot.img
+
+bin/boot0.bin: src/boot/boot0.asm
+	nasm $< -f bin -I src/boot/ -o $@
+
+bin/boot1.bin: src/boot/boot1.asm
+	nasm $< -f bin -I src/boot/ -o $@
+	
+bin/kernel_entry.o: src/kernel/kernel_entry.asm
+	nasm -f elf $< -o $@
+	
+bin/kernel.bin: bin/kernel_entry.o bin/kernel.o	
+	ld -o $@ -Ttext 0x2000 --oformat binary $^
+
+bin/kernel.o: src/kernel/kernel.c
+	gcc -ffreestanding -c $< -o $@		
+	
+kernel: src/kernel/kernel.c
+	i586-elf-gcc -o bin/kernel.o -c src/kernel/kernel.c -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
+	
+bin/pad: bin/kernel.bin #Padding kernel.bin to multiple of 512, because sectors in floppy are 512
+	dd if=/dev/zero of=$@ bs=1 count=$(shell expr 512 - $(shell echo `ls -l $< | awk '{print $$5}'`) )
 
 mkbin:
-	mkdir bin/
+	mkdir -p bin/
 
 clean:
-	rm -fr bin/ src/boot/*~ src/kernel/*~ *~
+	rm -fr bin/ src/boot/*~ src/kernel/*~ *~ kernel.dis
+	
+kernel.dis: mkbin bin/kernel.bin
+	ndisasm -b 32 bin/kernel.bin > $@
 
-kernel:
-	i586-elf-gcc -o bin/kernel.o -c src/kernel/kernel.c -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
-
-run:
-	qemu-system-x86_64 -fda bin/boot.img

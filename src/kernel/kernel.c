@@ -18,13 +18,31 @@
 *	Date: 21 - 03 - 2013
 */
 
-void kmain(){
+#define VIDEO_MEMORY_ADDRESS 0xB8000
+
+void clear_screen(){
+      char* video_memory = VIDEO_MEMORY_ADDRESS;
+      int i = 0; 
+      //Clear Screen
+      for(; i< 2000; video_memory+=2, i++){
+	    *video_memory = ' ';
+      }
+}
+
+void main(){
       // Create a pointer to a char , and point it to the first text cell of
       // video memory ( i . e . the top - left of the screen )
-      char *video_memory = (char*) 0xb8000;
+      char *video_memory = (char*) VIDEO_MEMORY_ADDRESS;      
+      char *text = "Marvin Kernel 0.01";
+      
+      clear_screen();
       // At the address pointed to by video_memory , store the character ’X ’
       // ( i . e . display ’X ’ in the top - left of the screen ).
-      *video_memory = 'X';
+      while(*text){
+	    *video_memory = *text;
+	    video_memory+=2;
+	    text++;
+      }
 }
 
 
