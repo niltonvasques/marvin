@@ -22,9 +22,11 @@
 #Instructions
 # $ ^ is substituted with all of the target ’ s dependancy files
 # $ < is the first dependancy and $@ is the target files
-C_SOURCES = $(wildcard src/kernel/*.c)
-HEADERS = $(wildcard src/kernel/*.h)
+C_SOURCES = $(wildcard src/kernel/*.c src/kernel/drivers/*.c)
+HEADERS = $(wildcard src/kernel/*.h src/kernel/drivers/*.h)
 OBJ = ${C_SOURCES:.c=.o}
+
+INC_DIRS = -Isrc/kernel -Isrc/kernel/drivers
 
 all: mkbin boot.img
 	
@@ -45,9 +47,6 @@ bin/boot1.bin: src/boot/boot1.asm
 	
 bin/kernel_entry.o: src/kernel/kernel_entry.asm
 	nasm -f elf $< -o $@
-	
-# bin/kernel.bin: bin/kernel_entry.o ${OBJ}
-# 	i586-elf-ld -o $@ -Ttext 0x2000 --oformat binary $^
 
 bin/kernel.bin: bin/kernel.elf
 	objcopy -O binary bin/kernel.elf bin/kernel.bin
@@ -56,7 +55,7 @@ bin/kernel.elf: bin/kernel_entry.o ${OBJ}
 	i586-elf-ld -o $@ -Ttext 0x2000 $^
 
 %.o: %.c ${HEADERS}
-	i586-elf-gcc -o $@ -c $< -Isrc/kernel -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
+	i586-elf-gcc -o $@ -c $< $(INC_DIRS) -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
 	
 kernel: src/kernel/kernel.c
 	i586-elf-gcc -o bin/kernel.o -c src/kernel/kernel.c -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs

@@ -13,17 +13,14 @@
 *You should have received a copy of the GNU General Public License
 *along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 *
-*	Description: I/O Library
+*	Description: Memory library
 *	Author: Nilton Vasques
 *	Date: 25 - 03 - 2013
 */
-#ifndef STDIO_H
-#define STDIO_H
+#ifndef LIBMEM_H
+#define LIBMEM_H
 
-#define VIDEO_MEMORY_ADDRESS 0xB8000
 
-void print_at( char* buffer, int x, int y );
-void print( char* buffer );
-void cls();
+void memcopy( char *source, char* dest, unsigned int n_bytes );
 
 #endif

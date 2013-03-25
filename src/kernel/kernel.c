@@ -21,8 +21,7 @@
 #include <libport_asm.h>
 #include <libstr.h>
 #include <libio.h>
-
-// #define DebugBreak() { __asm__("hlt"); }
+#include <libbochs.h>
 
 int main(){
       char *title 	= "Marvin Kernel 0.01";      
@@ -30,13 +29,17 @@ int main(){
       unsigned char result;
       
       cls();
-      print( title, 0, 0 );
+      print_at( title, 0, 0 );
       
       result = port_byte_in(PORT_FLOPPY_DISK);
       byte2str( result, buffer );
       
-      print( buffer, 0, 1 );
+      print_at( buffer, 0, 1 );
       
-      for(;;);
+      for(;;){
+// 	Testing scrolling ;)	    
+// 	    char* str = "X";
+// 	    print(str);
+      }
       return 0;
 }
