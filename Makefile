@@ -32,7 +32,7 @@ run: all
 	qemu-system-x86_64 -fda bin/boot.img
 	
 debug: all
-	qemu-system-x86_64 -fda bin/boot.img -s -S -boot a
+	bochs -f bochsrc
 
 boot.img: bin/boot0.bin bin/boot1.bin bin/kernel.bin bin/pad
 	cat $^ > bin/boot.img
