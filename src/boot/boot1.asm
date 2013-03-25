@@ -44,6 +44,8 @@ start:
       mov sp, bp       
       sti
       
+      call init
+      
 ;--------------------------------------------------------------------------------
 ;	3- MAIN LOOP - PROMPT
 ;--------------------------------------------------------------------------------
@@ -191,6 +193,7 @@ mainloop:
       jmp mainloop
       
 .cmd_init_triggered:
+      init:
       call load_kernel
       call switch_to_pm
       jmp $

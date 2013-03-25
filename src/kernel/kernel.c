@@ -18,31 +18,41 @@
 *	Date: 21 - 03 - 2013
 */
 
-#define VIDEO_MEMORY_ADDRESS 0xB8000
+#include <low_level.h>
+#include <libio.h>
 
-void clear_screen(){
-      char* video_memory = VIDEO_MEMORY_ADDRESS;
-      int i = 0; 
-      //Clear Screen
-      for(; i< 2000; video_memory+=2, i++){
-	    *video_memory = ' ';
-      }
-}
+void char2string( unsigned char c, char* s);
 
-void main(){
+
+int main(){
       // Create a pointer to a char , and point it to the first text cell of
       // video memory ( i . e . the top - left of the screen )
-      char *video_memory = (char*) VIDEO_MEMORY_ADDRESS;      
-      char *text = "Marvin Kernel 0.01";
+      char *text 	= "Marvin Kernel 0.01";
+      unsigned char result;
+      char *buffer 	= "000";
       
-      clear_screen();
+      cls();
       // At the address pointed to by video_memory , store the character ’X ’
       // ( i . e . display ’X ’ in the top - left of the screen ).
-      while(*text){
-	    *video_memory = *text;
-	    video_memory+=2;
-	    text++;
-      }
+      print( text, 0, 0 );
+      
+      result = port_byte_in(0x300);
+      char2string( result, buffer );
+      
+//       print( buffer, 0, 1 );
+      
+
+      
+      return 0;
+}
+
+void char2string( unsigned char c, char* s){
+      int pos = 2;      
+//       for(;pos >= 0;pos--){	    
+	    unsigned char remainder = (c % 10) + '0';
+	    c/=10;
+	    s[pos] = remainder;
+//       }
 }
 
 

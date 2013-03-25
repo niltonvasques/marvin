@@ -22,7 +22,9 @@
 #Instructions
 # $ ^ is substituted with all of the target ’ s dependancy files
 # $ < is the first dependancy and $@ is the target files
-
+C_SOURCES = $(wildcard src/kernel/*.c)
+HEADERS = $(wildcard src/kernel/*.h)
+OBJ = ${C_SOURCES:.c=.o}
 
 all: mkbin boot.img
 	
@@ -41,23 +43,23 @@ bin/boot1.bin: src/boot/boot1.asm
 bin/kernel_entry.o: src/kernel/kernel_entry.asm
 	nasm -f elf $< -o $@
 	
-bin/kernel.bin: bin/kernel_entry.o bin/kernel.o	
-	ld -o $@ -Ttext 0x2000 --oformat binary $^
+bin/kernel.bin: bin/kernel_entry.o ${OBJ}
+	i586-elf-ld -o $@ -Ttext 0x2000 --oformat binary $^
 
-bin/kernel.o: src/kernel/kernel.c
-	gcc -ffreestanding -c $< -o $@		
+%.o: %.c ${HEADERS}
+	i586-elf-gcc -o $@ -c $< -Isrc/kernel -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs	
 	
 kernel: src/kernel/kernel.c
 	i586-elf-gcc -o bin/kernel.o -c src/kernel/kernel.c -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
 	
 bin/pad: bin/kernel.bin #Padding kernel.bin to multiple of 512, because sectors in floppy are 512
-	dd if=/dev/zero of=$@ bs=1 count=$(shell expr 512 - $(shell echo `ls -l $< | awk '{print $$5}'`) )
+	dd if=/dev/zero of=$@ bs=1 count=$(shell expr 512 - $(shell expr $(shell echo `ls -l $< | awk '{print $$5}'` % 512) % 512 ) )
 
 mkbin:
 	mkdir -p bin/
 
 clean:
-	rm -fr bin/ src/boot/*~ src/kernel/*~ *~ kernel.dis
+	rm -fr bin/ src/boot/*~ src/kernel/*~ *~ kernel.dis src/boot/*.bin src/kernel/*.o
 	
 kernel.dis: mkbin bin/kernel.bin
 	ndisasm -b 32 bin/kernel.bin > $@
