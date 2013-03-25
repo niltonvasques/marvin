@@ -227,7 +227,7 @@ load_kernel:
 ;--------------------------------------------------------------------------------
 [bits 32]
       
-BEGIN_PM:
+BEGIN_PM:      
       call clear_screen_32
       mov ebx, MSG_PROT_MODE
       call print_string_32  
@@ -236,6 +236,7 @@ BEGIN_PM:
       mov ax, [CMD_STATUS]
       cmp ax, 01b
       jne hang
+      xchg bx, bx	;BOCHS BREAKPOINT :(
       call KERNEL_OFFSET
       
 hang:

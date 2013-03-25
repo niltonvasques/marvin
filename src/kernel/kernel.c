@@ -18,41 +18,25 @@
 *	Date: 21 - 03 - 2013
 */
 
-#include <low_level.h>
+#include <libport_asm.h>
+#include <libstr.h>
 #include <libio.h>
 
-void char2string( unsigned char c, char* s);
-
+// #define DebugBreak() { __asm__("hlt"); }
 
 int main(){
-      // Create a pointer to a char , and point it to the first text cell of
-      // video memory ( i . e . the top - left of the screen )
-      char *text 	= "Marvin Kernel 0.01";
-      unsigned char result;
+      char *title 	= "Marvin Kernel 0.01";      
       char *buffer 	= "000";
+      unsigned char result;
       
       cls();
-      // At the address pointed to by video_memory , store the character ’X ’
-      // ( i . e . display ’X ’ in the top - left of the screen ).
-      print( text, 0, 0 );
+      print( title, 0, 0 );
       
-      result = port_byte_in(0x300);
-      char2string( result, buffer );
+      result = port_byte_in(PORT_FLOPPY_DISK);
+      byte2str( result, buffer );
       
-//       print( buffer, 0, 1 );
+      print( buffer, 0, 1 );
       
-
-      
+      for(;;);
       return 0;
 }
-
-void char2string( unsigned char c, char* s){
-      int pos = 2;      
-//       for(;pos >= 0;pos--){	    
-	    unsigned char remainder = (c % 10) + '0';
-	    c/=10;
-	    s[pos] = remainder;
-//       }
-}
-
-

@@ -1,0 +1,4 @@
+floppya: 1_44=bin/boot.img, status=inserted
+boot: a
+display_library: x, options="gui_debug"
+magic_break: enabled=1

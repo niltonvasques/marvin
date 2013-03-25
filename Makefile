@@ -30,6 +30,9 @@ all: mkbin boot.img
 	
 run: all
 	qemu-system-x86_64 -fda bin/boot.img
+	
+debug: all
+	qemu-system-x86_64 -fda bin/boot.img -s -S -boot a
 
 boot.img: bin/boot0.bin bin/boot1.bin bin/kernel.bin bin/pad
 	cat $^ > bin/boot.img
@@ -43,11 +46,17 @@ bin/boot1.bin: src/boot/boot1.asm
 bin/kernel_entry.o: src/kernel/kernel_entry.asm
 	nasm -f elf $< -o $@
 	
-bin/kernel.bin: bin/kernel_entry.o ${OBJ}
-	i586-elf-ld -o $@ -Ttext 0x2000 --oformat binary $^
+# bin/kernel.bin: bin/kernel_entry.o ${OBJ}
+# 	i586-elf-ld -o $@ -Ttext 0x2000 --oformat binary $^
+
+bin/kernel.bin: bin/kernel.elf
+	objcopy -O binary bin/kernel.elf bin/kernel.bin
+	
+bin/kernel.elf: bin/kernel_entry.o ${OBJ}
+	i586-elf-ld -o $@ -Ttext 0x2000 $^
 
 %.o: %.c ${HEADERS}
-	i586-elf-gcc -o $@ -c $< -Isrc/kernel -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs	
+	i586-elf-gcc -o $@ -c $< -Isrc/kernel -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
 	
 kernel: src/kernel/kernel.c
 	i586-elf-gcc -o bin/kernel.o -c src/kernel/kernel.c -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
