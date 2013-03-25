@@ -37,9 +37,8 @@ int main(){
       print_at( buffer, 0, 1 );
       
       for(;;){
-// 	Testing scrolling ;)	    
-// 	    char* str = "X";
-// 	    print(str);
+// 	Testing scrolling ;)	
+	    print(title);
       }
       return 0;
 }

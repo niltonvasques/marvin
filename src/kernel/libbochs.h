@@ -20,6 +20,6 @@
 #ifndef LIBBOCH_H
 #define LIBBOCH_H
 
-#define BOCHS_BREAKPÒINT() { __asm__("xchg %bx, %bx) }
+#define BOCHS_BREAKPOINT() {__asm__("xchg %bx,%bx")}
 
 #endif
