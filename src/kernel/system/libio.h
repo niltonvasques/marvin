@@ -20,10 +20,9 @@
 #ifndef STDIO_H
 #define STDIO_H
 
-#define VIDEO_MEMORY_ADDRESS 0xB8000
-
 void print_at( char* buffer, int x, int y );
 void print( char* buffer );
+void putch( char c );
 void cls();
 void set_color_scheme( char attr_byte );
 

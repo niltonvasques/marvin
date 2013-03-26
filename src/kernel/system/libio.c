@@ -18,7 +18,7 @@
 *	Date: 25 - 03 - 2013
 */
 #include <libio.h>
-#include <screen.h>
+#include <vga.h>
 
 char attribute_byte = WHITE_ON_BLACK;
 
@@ -54,6 +54,10 @@ void print_at( char* buffer, int col, int row ){
 		  }		  
 	    }
       }
+}
+
+void putch( char c ){
+      print_char(c, -1, -1, attribute_byte );
 }
 
 void print( char* buffer ){

@@ -17,8 +17,8 @@
 *	Author: Nilton Vasques
 *	Date: 25 - 03 - 2013
 */
-#ifndef SCREEN_H
-#define SCREEN_H
+#ifndef VGA_H
+#define VGA_H
 
 #define VIDEO_MEMORY_ADDRESS 	0xB8000
 

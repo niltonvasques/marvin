@@ -236,7 +236,7 @@ BEGIN_PM:
       mov ax, [CMD_STATUS]
       cmp ax, 01b
       jne hang
-      xchg bx, bx	;BOCHS BREAKPOINT :(
+;       xchg bx, bx	;BOCHS BREAKPOINT :(
       call KERNEL_OFFSET
       
 hang:

@@ -18,30 +18,37 @@
 *	Date: 21 - 03 - 2013
 */
 
+#include <system.h>
 #include <libport_asm.h>
 #include <libstring.h>
 #include <libio.h>
 #include <libbochs.h>
+
+/*
+ *  Drivers
+ */
 #include <pic.h>
-#include <screen.h>
+#include <vga.h>
 
 void k_init();
 
+char *title 	= "Marvin Kernel v0.01";
 
 int kmain(){      
-      
-      k_init();       
+      int var = 10;
+      k_init();    
       
       for(;;){
-	    
       }
       return 0;
 }
 
 void k_init(){
-      char *title 	= "Marvin Kernel 0.01";      
-//       So, this call will remap the PICs so that IRQ0 starts at 0x20 and IRQ8 starts at 0x28:
+      gdt_install();      
+//       So, this call will remap the PICs so that IRQ0 starts at 0x20 and IRQ8 starts at 0x28:      
       init_pics( 0x20, 0x28 );
+      
+      idt_install();
       
       set_color_scheme( ATTRIBUTE_BYTE( BLACK, GREEN ) );
       

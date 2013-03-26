@@ -26,5 +26,6 @@ extern uchar 	*memcpy( uchar* source, uchar* dest, uint n_bytes );
 extern uchar 	*memset( uchar *dest, uchar val, int count );
 extern ushort 	*memsetw( ushort *dest, ushort val, int count );
 extern void 	byte2str( uchar c, char* s);
+extern void 	uint2str( uint c, char* s);
 
 #endif

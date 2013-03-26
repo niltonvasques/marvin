@@ -51,3 +51,12 @@ void byte2str( uchar c, char* s){
 	    s[pos] = remainder;
       }
 }
+
+void uint2str( uint c, char* s){
+      int pos = 10;      
+      for(;pos >= 0;pos--){	    
+	    unsigned char remainder = (c % 10) + '0';
+	    c/=10;
+	    s[pos] = remainder;
+      }
+}

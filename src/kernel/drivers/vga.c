@@ -17,7 +17,7 @@
 *	Author: Nilton Vasques
 *	Date: 25 - 03 - 2013
 */
-#include <screen.h>
+#include <vga.h>
 #include <libport_asm.h>
 #include <libstring.h>
 
