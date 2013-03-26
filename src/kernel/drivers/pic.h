@@ -13,15 +13,22 @@
 *You should have received a copy of the GNU General Public License
 *along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 *
-*	Description: Memory library
+*	Description: PIC driver
 *	Author: Nilton Vasques
-*	Date: 25 - 03 - 2013
+*	Date: 26 - 03 - 2013
 */
-#include <libmem.h>
+#ifndef PIC_H
+#define PIC_H
 
-void memcopy( char *source, char* dest, unsigned int n_bytes ){
-      unsigned int count = 0;
-      for(; count < n_bytes; count++){
-	    *(dest + count) = *(source + count);
-      }      
-}
+#define PIC1 0x20
+#define PIC2 0xA0
+
+#define ICW1 0x11
+#define ICW4 0x01
+
+/* init_pics()
+ * init the PICs and remap them
+ */
+void init_pics(int pic1, int pic2);
+
+#endif

@@ -13,13 +13,13 @@
 *You should have received a copy of the GNU General Public License
 *along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 *
-*	Description: String utils
+*	Description: Memory library
 *	Author: Nilton Vasques
 *	Date: 25 - 03 - 2013
 */
-#ifndef LIBSTR_H
-#define LIBSTR_H
+#ifndef LIBSYSTEM_H
+#define LIBSYSTEM_H
 
-void byte2str( unsigned char c, char* s);
+
 
 #endif

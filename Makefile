@@ -22,11 +22,16 @@
 #Instructions
 # $ ^ is substituted with all of the target ’ s dependancy files
 # $ < is the first dependancy and $@ is the target files
-C_SOURCES = $(wildcard src/kernel/*.c src/kernel/drivers/*.c)
-HEADERS = $(wildcard src/kernel/*.h src/kernel/drivers/*.h)
-OBJ = ${C_SOURCES:.c=.o}
-
-INC_DIRS = -Isrc/kernel -Isrc/kernel/drivers
+CC 		= i586-elf-gcc
+LD 		= i586-elf-ld
+CFLAGS 		= -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin
+ASM 		= nasm
+C_SOURCES 	= $(wildcard src/kernel/system/*.c src/kernel/drivers/*.c)
+HEADERS 	= $(wildcard src/kernel/system/*.h src/kernel/drivers/*.h)
+OBJ 		= ${C_SOURCES:.c=.o}
+KLINK 		= src/kernel/system/kernel.lnk
+KENTRY 		= src/kernel/system/kernel_entry.asm
+INC_DIRS 	= -Isrc/kernel/system -Isrc/kernel/drivers
 
 all: mkbin boot.img
 	
@@ -40,25 +45,26 @@ boot.img: bin/boot0.bin bin/boot1.bin bin/kernel.bin bin/pad
 	cat $^ > bin/boot.img
 
 bin/boot0.bin: src/boot/boot0.asm
-	nasm $< -f bin -I src/boot/ -o $@
+	$(ASM) $< -f bin -I src/boot/ -o $@
 
 bin/boot1.bin: src/boot/boot1.asm
-	nasm $< -f bin -I src/boot/ -o $@
+	$(ASM) $< -f bin -I src/boot/ -o $@
 	
-bin/kernel_entry.o: src/kernel/kernel_entry.asm
-	nasm -f elf $< -o $@
+bin/kernel_entry.o: $(KENTRY)
+	$(ASM) -f elf $< -o $@
 
 bin/kernel.bin: bin/kernel.elf
 	objcopy -O binary bin/kernel.elf bin/kernel.bin
 	
-bin/kernel.elf: bin/kernel_entry.o ${OBJ}
-	i586-elf-ld -o $@ -Ttext 0x2000 $^
+bin/kernel.elf: $(KLINK) bin/kernel_entry.o ${OBJ}
+	$(LD) -o $@ -T $^
+# 	$(LD) -o $@ -Ttext 0x2000 $^
 
 %.o: %.c ${HEADERS}
-	i586-elf-gcc -o $@ -c $< $(INC_DIRS) -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
+	$(CC) -o $@ -c $< $(INC_DIRS) $(CFLAGS)
 	
 kernel: src/kernel/kernel.c
-	i586-elf-gcc -o bin/kernel.o -c src/kernel/kernel.c -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
+	$(CC) -o bin/kernel.o -c src/kernel/kernel.c $(CFLAGS)
 	
 bin/pad: bin/kernel.bin #Padding kernel.bin to multiple of 512, because sectors in floppy are 512
 	dd if=/dev/zero of=$@ bs=1 count=$(shell expr 512 - $(shell expr $(shell echo `ls -l $< | awk '{print $$5}'` % 512) % 512 ) )
@@ -67,7 +73,7 @@ mkbin:
 	mkdir -p bin/
 
 clean:
-	rm -fr bin/ src/boot/*~ src/kernel/*~ *~ kernel.dis src/boot/*.bin src/kernel/*.o
+	rm -fr bin/ src/boot/*~ src/kernel/system/*~ src/kernel/drivers/*~ *~ kernel.dis src/boot/*.bin $(OBJ)
 	
 kernel.dis: mkbin bin/kernel.bin
 	ndisasm -b 32 bin/kernel.bin > $@

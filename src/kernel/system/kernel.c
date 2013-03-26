@@ -19,26 +19,37 @@
 */
 
 #include <libport_asm.h>
-#include <libstr.h>
+#include <libstring.h>
 #include <libio.h>
 #include <libbochs.h>
+#include <pic.h>
+#include <screen.h>
 
-int main(){
-      char *title 	= "Marvin Kernel 0.01";      
-      char *buffer 	= "000";
-      unsigned char result;
+void k_init();
+
+
+int kmain(){      
       
-      cls();
-      print_at( title, 0, 0 );
-      
-      result = port_byte_in(PORT_FLOPPY_DISK);
-      byte2str( result, buffer );
-      
-      print_at( buffer, 0, 1 );
+      k_init();       
       
       for(;;){
-// 	Testing scrolling ;)	
-	    print(title);
+	    
       }
       return 0;
+}
+
+void k_init(){
+      char *title 	= "Marvin Kernel 0.01";      
+//       So, this call will remap the PICs so that IRQ0 starts at 0x20 and IRQ8 starts at 0x28:
+      init_pics( 0x20, 0x28 );
+      
+      set_color_scheme( ATTRIBUTE_BYTE( BLACK, GREEN ) );
+      
+      cls();
+      
+      print_at( title, 0, 0 );
+      
+      set_color_scheme( ATTRIBUTE_BYTE( BLACK, RED ) );
+      
+      print_at( title, 0, 1 );
 }

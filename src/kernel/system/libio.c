@@ -20,12 +20,18 @@
 #include <libio.h>
 #include <screen.h>
 
+char attribute_byte = WHITE_ON_BLACK;
+
+void set_color_scheme( char attr_byte ){
+      attribute_byte = attr_byte;
+}
+
 void cls(){
       int i = 0; 
       int j = 0;
       for(i = 0; i<MAX_ROWS; i++){
 	    for(j = 0; j < MAX_COLS; j++){
-		  print_char(' ', j, i, 0 );
+		  print_char(' ', j, i, attribute_byte );
 	    }
       }
       
@@ -38,7 +44,7 @@ void print_at( char* buffer, int col, int row ){
       }
       
       while(*buffer){
-	    print_char(*buffer,col,row,0);
+	    print_char(*buffer,col,row,attribute_byte);
 	    buffer++;
 	    if( col >= 0 && row >= 0 ){
 		  col++;

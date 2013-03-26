@@ -13,14 +13,18 @@
 *You should have received a copy of the GNU General Public License
 *along with Marvin OS.  If not, see <http://www.gnu.org/licenses/>.
 *
-*	Description: Memory library
+*	Description: String utils
 *	Author: Nilton Vasques
 *	Date: 25 - 03 - 2013
 */
-#ifndef LIBMEM_H
-#define LIBMEM_H
+#ifndef LIBSTR_H
+#define LIBSTR_H
 
+#include <types.h>
 
-void memcopy( char *source, char* dest, unsigned int n_bytes );
+extern uchar 	*memcpy( uchar* source, uchar* dest, uint n_bytes );
+extern uchar 	*memset( uchar *dest, uchar val, int count );
+extern ushort 	*memsetw( ushort *dest, ushort val, int count );
+extern void 	byte2str( uchar c, char* s);
 
 #endif

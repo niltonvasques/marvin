@@ -18,10 +18,13 @@
 ; *	Date: 25 - 03 - 2013
 ; */
 [bits 32]
-[extern main]
+[extern kmain]
+[global kernel_entry] 			; making entry point visible to linker
 
-      call main
+kernel_entry:
+      call kmain
       jmp $
+      
 ; global loader                           ; making entry point visible to linker
 ; global magic                            ; we will use this in kmain
 ; global mbd                              ; we will use this in kmain

@@ -27,8 +27,29 @@
 
 #define WHITE_ON_BLACK		0x0F
 
+#define BLACK			0x00
+#define BLUE			0x01
+#define GREEN			0x02
+#define CYAN			0x03
+#define RED			0x04
+#define MAGENTA			0x05
+#define BROWN			0x06
+#define LIGHT_GREY		0x07
+#define DARK_GREY		0x08
+#define LIGHT_BLUE		0x09
+#define LIGHT_GREEN		0x0A
+#define LIGHT_CYAN		0x0B
+#define LIGHT_RED		0x0C
+#define LIGHT_MAGENTA		0X0D
+#define LIGHT_BROWN		0x0E
+#define WHITE			0x0F
+
+#define ATTRIBUTE_BYTE( back, fore ) ( (back<<4)+(fore) )
+
 #define REG_SCREEN_CTRL		0x3D4
 #define REG_SCREEN_DATA		0x3D5
+
+
 
 #define get_screen_offset(col,row) ( ((row)*MAX_COLS+(col))*2 )
 

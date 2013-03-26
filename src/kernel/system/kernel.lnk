@@ -1,0 +1,14 @@
+ENTRY(kernel_entry)
+SECTIONS
+{
+  .text  0x002000 : {
+    *(.text)
+  }
+  .data  : {
+    *(.data)
+  }
+  .bss  :
+  { 					
+    *(.bss)
+  }
+}
