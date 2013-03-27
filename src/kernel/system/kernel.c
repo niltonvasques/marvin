@@ -29,6 +29,11 @@
 #include <vga.h>
 #include <keyboard.h>
 
+/*
+ * Applications
+ */
+#include <shell.h>
+
 void k_init();
 
 char *title 	= "Marvin Kernel v0.01\n";
@@ -37,9 +42,10 @@ int kmain(){
       k_init();   
 
       cls();      
-      set_color_scheme( ATTRIBUTE_BYTE( BLACK, GREEN ) );            
+      set_color_scheme( ATTRIBUTE_BYTE( BLACK, LIGHT_GREEN ) );            
       print_at( title, 0, 0 );      
-      set_color_scheme( ATTRIBUTE_BYTE( BLACK, RED ) );      
+      
+      shell_init();
       
       for(;;){
       }

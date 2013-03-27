@@ -94,4 +94,7 @@ void timer_wait(int ticks);
 void ps2_keyboard_install();
 void ps2_load_keyboard_driver( void (*driver)(unsigned char scancode) );
 
+void keyboard_register_listener( void (*key_listener)(unsigned char scancode) );
+void keyboard_unregister_listener( );
+
 #endif

@@ -2,6 +2,8 @@
 #define KEYBOARD_H
 
 void keyboard_driver( unsigned char scancode );
+void add_key_listener( void (*key_listener)( unsigned char character ) );
+void remove_key_listener( );
 
 #define KEY_LSHIFT	0xA0
 #define KEY_RSHIFT	0xA1

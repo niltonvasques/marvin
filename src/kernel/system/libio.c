@@ -64,3 +64,48 @@ void print( char* buffer ){
       print_at( buffer, -1, -1 );
 }
 
+char *key_buffer = 0;
+unsigned int key_buffer_lenght = 0;
+uint key_buffer_max_lenght = 0;
+int buffering = 0;
+
+void key_listener(unsigned char character){
+      
+      if( key_buffer && key_buffer_lenght < key_buffer_max_lenght ){
+	    if ( character == '\b' ){
+		  if( key_buffer_lenght == 0 ) return;
+		  key_buffer_lenght--;	
+		  putch( character );
+		  return;
+	    }
+	    
+	    putch( character );
+	    if( character == '\n' ){
+		  *(key_buffer + key_buffer_lenght) = '\0';
+		  buffering = 0;
+	    }else{
+		  *(key_buffer + key_buffer_lenght) = character;
+		  key_buffer_lenght++;
+	    }
+      }else{
+	    *(key_buffer + key_buffer_lenght) = '\0';
+	    buffering = 0;
+      }
+}
+
+void gets( char* buffer, uint lenght ){
+      
+      keyboard_register_listener( key_listener );
+      key_buffer = buffer;
+      key_buffer_max_lenght = lenght;
+      buffering = 1;      
+      
+      while(buffering);    
+      
+      keyboard_unregister_listener( );
+      key_buffer = 0;
+      key_buffer_lenght = 0;
+      key_buffer_max_lenght = 0;
+      
+}
+

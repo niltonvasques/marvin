@@ -4,6 +4,8 @@
 
 void keyboard_turn_on_lights();
 
+void (*keyboard_driver_key_listener)( unsigned char scancode );
+
 /* KBDUS means US Keyboard Layout. This is a scancode table
 *  used to layout a standard US keyboard. I have left some
 *  comments in to give you an idea of what key is what, even
@@ -76,7 +78,9 @@ void keyboard_driver( unsigned char scancode ){
 	    *  to the above layout to correspond to 'shift' being
 	    *  held. If shift is held using the larger lookup table,
 	    *  you would add 128 to the scancode when you look for it */
-	    putch(kbdus[scancode]);
+	    if( keyboard_driver_key_listener ){
+		  keyboard_driver_key_listener( kbdus[scancode] );  
+	    }
       }
 }
 
@@ -86,4 +90,12 @@ void keyboard_turn_on_lights(){
       }
       outb(PS2_DATA_REGISTER, 0xED);
       outb(PS2_DATA_REGISTER, 2);      
+}
+
+void add_key_listener( void (*key_listener)( unsigned char character ) ){
+      keyboard_driver_key_listener = key_listener;
+}
+
+void remove_key_listener( ){
+    keyboard_driver_key_listener = 0;  
 }

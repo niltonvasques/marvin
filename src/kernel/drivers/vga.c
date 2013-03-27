@@ -56,7 +56,7 @@ void print_char( char character, int col, int row, char attribute_type ){
 	    attribute_type = WHITE_ON_BLACK;
       }
       
-      int offset;
+      int offset;     
       
       if( col >= 0 && row >= 0 ){
 	    offset = get_screen_offset( col, row );
@@ -64,15 +64,21 @@ void print_char( char character, int col, int row, char attribute_type ){
 	    offset = get_cursor();
       }
       
+      if( character == '\b' ){
+	    offset = get_cursor();
+	    offset-=2;	    
+	    if( offset < 0 ) offset = 0;
+      } 
+      
       if( character == '\n' ){
 	    int rows 	= offset / ( MAX_COLS << 1 );
-	    offset	= get_screen_offset( 79, rows );
+	    offset	= get_screen_offset( 79, rows );	    
       } else {
-	    vidmem[offset] 	= character;
-	    vidmem[offset+1] 	= attribute_type;
-      }
+	    vidmem[offset] 	= ( character == '\b' ? ' ': character );
+	    vidmem[offset+1] 	= attribute_type;	    
+      }      
       
-      offset += 2;
+      if( character != '\b' ) offset += 2;
       offset = handle_scrolling( offset );
       set_cursor( offset );            
 }

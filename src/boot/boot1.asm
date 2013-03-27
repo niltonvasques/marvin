@@ -25,7 +25,7 @@
 
       KERNEL_OFFSET 		equ 0x2000      
       KERNEL_START_SECTOR	equ 0x06
-      KERNEL_N_SECTORS		equ 0x0F
+      KERNEL_N_SECTORS		equ 0x20
       BOOT_DRIVE		equ 0x00
       
       jmp start

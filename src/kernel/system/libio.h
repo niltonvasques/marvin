@@ -19,11 +19,13 @@
 */
 #ifndef STDIO_H
 #define STDIO_H
+#include <system.h>
 
 void print_at( char* buffer, int x, int y );
 void print( char* buffer );
 void putch( char c );
 void cls();
 void set_color_scheme( char attr_byte );
+void gets( char* buffer, uint lenght );
 
 #endif

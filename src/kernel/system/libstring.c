@@ -60,3 +60,51 @@ void uint2str( uint c, char* s){
 	    s[pos] = remainder;
       }
 }
+
+/* Return 0 if equals
+ * Return any value if not equals
+ */
+int strcmp( char* str1, char* str2 ){
+      while(1){
+	    if(*str1 == *str2){
+		  if( *str1 == END_STRING )	return 1;
+		  str1++;
+		  str2++;
+	    }else{
+		  return 0;
+	    }
+      }
+      return 0;
+}
+
+/*
+ * Count numbers of params
+ */
+int strargs( char* args ){
+      int count = 0;
+      if( *args ) count++;
+      while(*args ){
+	    if(*args == ' ' && *(args + 1) != END_STRING ) count++;
+	    args++;
+      }
+      return count;
+}
+
+/*
+ * Count numbers of params
+ */
+int strarg( char* args, char* dest,  int arg ){
+      int count = 0;
+      while(*args){	    
+	    if(*args == ' ' ){
+		  if( *(args + 1) != END_STRING )  count++;
+	    } else if ( count == arg ){
+		  *dest = *args;		  
+		  dest++;
+	    }
+	    if( count > arg ) break;	    
+	    args++;
+      }
+      *dest = END_STRING;
+      return count;
+}
