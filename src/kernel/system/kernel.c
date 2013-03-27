@@ -19,7 +19,6 @@
 */
 
 #include <system.h>
-#include <libport_asm.h>
 #include <libstring.h>
 #include <libio.h>
 #include <libbochs.h>
@@ -27,16 +26,20 @@
 /*
  *  Drivers
  */
-#include <pic.h>
 #include <vga.h>
+#include <keyboard.h>
 
 void k_init();
 
-char *title 	= "Marvin Kernel v0.01";
+char *title 	= "Marvin Kernel v0.01\n";
 
 int kmain(){      
-      int var = 10;
-      k_init();    
+      k_init();   
+
+      cls();      
+      set_color_scheme( ATTRIBUTE_BYTE( BLACK, GREEN ) );            
+      print_at( title, 0, 0 );      
+      set_color_scheme( ATTRIBUTE_BYTE( BLACK, RED ) );      
       
       for(;;){
       }
@@ -45,18 +48,16 @@ int kmain(){
 
 void k_init(){
       gdt_install();      
-//       So, this call will remap the PICs so that IRQ0 starts at 0x20 and IRQ8 starts at 0x28:      
-      init_pics( 0x20, 0x28 );
       
       idt_install();
       
-      set_color_scheme( ATTRIBUTE_BYTE( BLACK, GREEN ) );
+      isrs_install();
       
-      cls();
+      irq_install();      
       
-      print_at( title, 0, 0 );
+      timer_install();
       
-      set_color_scheme( ATTRIBUTE_BYTE( BLACK, RED ) );
+      ps2_keyboard_install();
       
-      print_at( title, 0, 1 );
+      ps2_load_keyboard_driver( keyboard_driver );
 }

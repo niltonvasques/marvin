@@ -4,38 +4,38 @@
 /* These are function prototypes for all of the exception
 *  handlers: The first 32 entries in the IDT are reserved
 *  by Intel, and are designed to service exceptions! */
-extern void isr0();
-extern void isr1();
-extern void isr2();
-extern void isr3();
-extern void isr4();
-extern void isr5();
-extern void isr6();
-extern void isr7();
-extern void isr8();
-extern void isr9();
-extern void isr10();
-extern void isr11();
-extern void isr12();
-extern void isr13();
-extern void isr14();
-extern void isr15();
-extern void isr16();
-extern void isr17();
-extern void isr18();
-extern void isr19();
-extern void isr20();
-extern void isr21();
-extern void isr22();
-extern void isr23();
-extern void isr24();
-extern void isr25();
-extern void isr26();
-extern void isr27();
-extern void isr28();
-extern void isr29();
-extern void isr30();
-extern void isr31();
+__native__ void isr0();
+__native__ void isr1();
+__native__ void isr2();
+__native__ void isr3();
+__native__ void isr4();
+__native__ void isr5();
+__native__ void isr6();
+__native__ void isr7();
+__native__ void isr8();
+__native__ void isr9();
+__native__ void isr10();
+__native__ void isr11();
+__native__ void isr12();
+__native__ void isr13();
+__native__ void isr14();
+__native__ void isr15();
+__native__ void isr16();
+__native__ void isr17();
+__native__ void isr18();
+__native__ void isr19();
+__native__ void isr20();
+__native__ void isr21();
+__native__ void isr22();
+__native__ void isr23();
+__native__ void isr24();
+__native__ void isr25();
+__native__ void isr26();
+__native__ void isr27();
+__native__ void isr28();
+__native__ void isr29();
+__native__ void isr30();
+__native__ void isr31();
 
 /* This is a very repetitive function... it's not hard, it's
 *  just annoying. As you can see, we set the first 32 entries

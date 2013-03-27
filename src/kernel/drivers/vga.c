@@ -18,7 +18,7 @@
 *	Date: 25 - 03 - 2013
 */
 #include <vga.h>
-#include <libport_asm.h>
+#include <system.h>
 #include <libstring.h>
 
 int get_cursor(){

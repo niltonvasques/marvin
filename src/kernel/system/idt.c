@@ -1,7 +1,5 @@
 #include <system.h>
 #include <libstring.h>
-#include <types.h>
-#include <libbochs.h>
 #include <libio.h>
 /* Defines an IDT entry */
 struct idt_entry
@@ -29,7 +27,7 @@ struct idt_entry idt[256];
 struct idt_ptr idtp;
 
 /* This exists in 'start.asm', and is used to load our IDT */
-extern void idt_load();
+__native__ void idt_load();
 
 /* Use this function to set an entry in the IDT. Alot simpler
 *  than twiddling with the GDT ;) */
@@ -52,9 +50,7 @@ void idt_install()
       /* Clear out the entire IDT, initializing it to zeros */
       memset((uchar*)&idt, 0, sizeof(struct idt_entry) * 256);
 
-      /* Add any new ISRs to the IDT here using idt_set_gate */
-      isrs_install();
-      
+      /* Add any new ISRs to the IDT here using idt_set_gate */      
 //       char *ret = "0000000000";
 //       uint2str((uint)&idtp,ret);
 //       print(ret);

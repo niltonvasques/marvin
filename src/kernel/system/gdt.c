@@ -16,7 +16,10 @@ Sz: Size bit. If 0 the selector defines 16 bit protected mode. If 1 it defines 3
 // http://wiki.osdev.org/GDT
 
 #include <system.h>
-#include <libbochs.h>
+
+/* This will be a function in start.asm. We use this to properly
+*  reload the new segment registers */
+__native__ void gdt_flush();
 
 /* Defines a GDT entry. We say packed, because it prevents the
 *  compiler from doing things that it thinks is best: Prevent
@@ -42,10 +45,6 @@ struct gdt_ptr
 /* Our GDT, with 3 entries, and finally our special GDT pointer */
 struct gdt_entry gdt[3];
 struct gdt_ptr gdtp;
-
-/* This will be a function in start.asm. We use this to properly
-*  reload the new segment registers */
-extern void gdt_flush();
 
 /* Setup a descriptor in the Global Descriptor Table */
 void gdt_set_entry(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran)

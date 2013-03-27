@@ -17,7 +17,7 @@
 *	Author: Nilton Vasques
 *	Date: 25 - 03 - 2013
 */
-#include <libport_asm.h>
+#include <system.h>
 
 uchar inb(ushort port){
       // A handy C wrapper function that reads a byte from the specified port
