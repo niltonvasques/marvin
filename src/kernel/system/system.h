@@ -23,13 +23,13 @@
 #include <types.h>
 
 /* This defines what the stack looks like after an ISR was running */
-struct regs
+typedef struct regs
 {
     unsigned int gs, fs, es, ds;      /* pushed the segs last */
     unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;  /* pushed by 'pusha' */
     unsigned int int_no, err_code;    /* our 'push byte #' and ecodes do this */
     unsigned int eip, cs, eflags, useresp, ss;   /* pushed by the processor automatically */ 
-};
+}registers_t;
 
 
 #define PORT_FLOPPY_DISK 0x3F2
@@ -38,6 +38,11 @@ uchar 	inb(ushort port);
 ushort 	inw(ushort port);
 void 	outb(ushort port, uchar data );
 void 	outw(ushort port, ushort data);
+
+#define PANIC(msg) panic(msg, __FILE__, __LINE__);
+//#define ASSERT(b) ((b) ? (void)0 : panic_assert(__FILE__, __LINE__, #b))
+
+extern void panic(const char *message, const char *file, u32int line);
 
 
 /* Setup a descriptor in the Global Descriptor Table */

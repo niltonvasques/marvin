@@ -27,6 +27,7 @@
 #define SHELL_CMD_HELP			"help"
 #define SHELL_CMD_COLOR			"color"
 #define SHELL_CMD_CLS			"cls"
+#define SHELL_CMD_FAULT			"fault"
 
 #define SHELL_MSG_BAD_COMMAND		": command not found\n"
 
@@ -82,6 +83,8 @@ void shell_cmd_help(){
       print(SHELL_CMD_COLOR);
       print("\n");
       print(SHELL_CMD_CLS);
+      print("\n");
+      print(SHELL_CMD_FAULT);
       print("\n");
 }
 
@@ -140,6 +143,11 @@ void shell_cmd_cls(){
       cls();      
 }
 
+void shell_cmd_fault(){
+	u32int *ptr = (u32int*)0xA0000000;
+	u32int do_page_fault __attribute__((__unused__)) = *ptr;
+}
+
 void shell_commands_parser(){
       char arg[SHELL_CMD_MAX_LENGHT];
       int argc = strargs( command_buffer );
@@ -167,6 +175,11 @@ void shell_commands_parser(){
 	    return;
       }
       
+      if( strcmp( arg, SHELL_CMD_FAULT) ){
+    	  shell_cmd_fault();
+    	  return;
+      }
+
       print( arg );
       print( SHELL_MSG_BAD_COMMAND );
 }

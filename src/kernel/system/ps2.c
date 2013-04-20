@@ -22,7 +22,7 @@
 void (*internal_keyboard_driver)(unsigned char scancode);
 
 /* Handles the keyboard interrupt */
-void keyboard_irq_handler(struct regs *r __attribute__((__unused__)) )
+void keyboard_irq_handler(registers_t *r __attribute__((__unused__)) )
 {
       unsigned char scancode;
 
