@@ -26,6 +26,7 @@
 [global kernel_entry] 			; making entry point visible to linker
 [global idt_load]
 [global gdt_flush]
+[global end]
 
 
 kernel_entry:
@@ -453,4 +454,6 @@ irq_common_stub:
     popa
     add esp, 8
     iret
+
+    end dd 0
 		

@@ -64,6 +64,75 @@ void print( char* buffer ){
       print_at( buffer, -1, -1 );
 }
 
+void print_dec( u32int dec ){
+	if (dec == 0)
+	    {
+			putch('0');
+	        return;
+	    }
+
+		int acc = dec;
+	    char c[32];
+	    int i = 0;
+	    while (acc > 0)
+	    {
+	        c[i] = '0' + acc%10;
+	        acc /= 10;
+	        i++;
+	    }
+	    c[i] = 0;
+
+	    char c2[32];
+	    c2[i--] = 0;
+	    int j = 0;
+	    while(i >= 0)
+	    {
+	        c2[i--] = c[j++];
+	    }
+	    print(c2);
+}
+
+void print_hex(u32int n)
+{
+    int32 tmp;
+
+    print("0x");
+
+    char noZeroes = 1;
+
+    int32 i;
+    for (i = 28; i > 0; i -= 4)
+    {
+        tmp = (n >> i) & 0xF;
+        if (tmp == 0 && noZeroes != 0)
+        {
+            continue;
+        }
+
+        if (tmp >= 0xA)
+        {
+            noZeroes = 0;
+            putch (tmp-0xA+'a' );
+        }
+        else
+        {
+            noZeroes = 0;
+            putch( tmp+'0' );
+        }
+    }
+
+    tmp = n & 0xF;
+    if (tmp >= 0xA)
+    {
+    	putch (tmp-0xA+'a');
+    }
+    else
+    {
+    	putch (tmp+'0');
+    }
+
+}
+
 char *key_buffer = 0;
 unsigned int key_buffer_lenght = 0;
 uint key_buffer_max_lenght = 0;

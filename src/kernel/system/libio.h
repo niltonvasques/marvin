@@ -23,6 +23,8 @@
 
 void print_at( char* buffer, int x, int y );
 void print( char* buffer );
+void print_dec( u32int dec );
+void print_hex( u32int n);
 void putch( char c );
 void cls();
 void set_color_scheme( char attr_byte );

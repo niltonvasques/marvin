@@ -22,6 +22,7 @@
 #include <libstring.h>
 #include <libio.h>
 #include <libbochs.h>
+#include <paging.h>
 
 /*
  *  Drivers
@@ -43,10 +44,10 @@ int kmain(){
 
       cls();      
       set_color_scheme( ATTRIBUTE_BYTE( BLACK, LIGHT_GREEN ) );            
-      print_at( title, 0, 0 );      
-      
+      print_at( title, 0, 0 );
+
       shell_init();
-      
+
       for(;;){
       }
       return 0;
@@ -66,4 +67,7 @@ void k_init(){
       ps2_keyboard_install();
       
       ps2_load_keyboard_driver( keyboard_driver );
+
+      initialise_paging();
+
 }

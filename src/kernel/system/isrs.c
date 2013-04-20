@@ -128,7 +128,7 @@ unsigned char *exception_messages[] =
 *  endless loop. All ISRs disable interrupts while they are being
 *  serviced as a 'locking' mechanism to prevent an IRQ from
 *  happening and messing up kernel data structures */
-void fault_handler(struct regs *r)
+void fault_handler(registers_t *r)
 {
     /* Is this a fault whose number is from 0 to 31? */
     if (r->int_no < 32)
@@ -138,6 +138,29 @@ void fault_handler(struct regs *r)
         *  infinite loop */
         print((char*) exception_messages[r->int_no]);
         print(" Exception. System Halted!\n");
+        // A page fault has occurred.
+		// The faulting address is stored in the CR2 register.
+		u32int faulting_address;
+		asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
+
+		// The error code gives us details of what happened.
+
+		int present   = !(r->err_code & 0x1); // Page not present
+		int rw = r->err_code & 0x2;           // Write operation?
+		int us = r->err_code & 0x4;           // Processor was in user-mode?
+		int reserved = r->err_code & 0x8;     // Overwritten CPU-reserved bits of page entry?
+//		int id = r->err_code & 0x10;          // Caused by an instruction fetch?
+
+		// Output an error message.
+		print("Page fault! ( ");
+		if (present) {print("present ");}
+		if (rw) {print("read-only ");}
+		if (us) {print("user-mode ");}
+		if (reserved) {print("reserved ");}
+		print(") at 0x");
+		print_hex(faulting_address);
+		print("\n");
+		PANIC("Page fault");
         for (;;);
     }
 }

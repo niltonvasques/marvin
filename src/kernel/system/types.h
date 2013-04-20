@@ -4,15 +4,27 @@
 #ifndef uchar
 #define uchar 		unsigned char
 #endif
+
 #ifndef byte
 #define byte 		unsigned char
 #endif
+
 #ifndef uint
 #define uint		unsigned int
 #endif
+
+#ifndef int32
+#define int32		int
+#endif
+
+#ifndef u32int
+#define u32int		unsigned int
+#endif
+
 #ifndef word
 #define word		unsigned short
 #endif
+
 #ifndef ushort
 #define ushort		unsigned short
 #endif
