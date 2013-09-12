@@ -112,6 +112,7 @@ void timer_install();
 
 void timer_wait(int ticks);
 
+void register_timer_handler( void (*handler)(void) );
 
 #define PS2_DATA_REGISTER 0x60
 #define PS2_CTRL_REGISTER 0x64

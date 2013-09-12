@@ -36,6 +36,7 @@ INC_DIRS 	= -Isrc/kernel/system -Isrc/kernel/drivers
 all: mkbin boot.img
 	
 run: all
+	export PATH=$PATH:/usr/local/cross/bin
 	qemu-system-x86_64 -fda bin/boot.img
 	
 debug: all

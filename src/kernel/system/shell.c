@@ -21,6 +21,8 @@
 #include <libio.h>
 #include <libstring.h>
 #include <vga.h>
+#include <libtimer.h>
+
 
 #define SHELL_CMD_MAX_LENGHT		60
 #define SHELL_CMD_VERSION		"version"
@@ -28,6 +30,8 @@
 #define SHELL_CMD_COLOR			"color"
 #define SHELL_CMD_CLS			"cls"
 #define SHELL_CMD_FAULT			"fault"
+#define SHELL_CMD_TIMER			"timer"
+
 
 #define SHELL_MSG_BAD_COMMAND		": command not found\n"
 
@@ -86,6 +90,9 @@ void shell_cmd_help(){
       print("\n");
       print(SHELL_CMD_FAULT);
       print("\n");
+      print(SHELL_CMD_TIMER);
+      print("\n");
+
 }
 
 char *color_list[16] = {
@@ -148,6 +155,37 @@ void shell_cmd_fault(){
 	u32int do_page_fault __attribute__((__unused__)) = *ptr;
 }
 
+int timer_count_seconds = 0;
+
+void timer_elapsed(void){
+	timer_count_seconds++;
+}
+
+void shell_cmd_timer(int argc){
+      char arg[SHELL_CMD_MAX_LENGHT];
+      if( argc == 2 ){
+	    	strarg( command_buffer, arg, 1 );
+	    	if( strcmp( arg, "-h") || strcmp( arg, "--help" ) ) {
+			print("params\nusage: timer [ -h | --help ] | [-s | --sleep]\n");
+	    	}
+	}else if( argc == 3 ){
+	    	strarg( command_buffer, arg, 1 );
+		if( strcmp( arg, "-s") | strcmp( arg, "--sleep") ){
+			strarg( command_buffer, arg, 2 );
+			if( strcmp( arg, "5" ) ){
+				register_timer_handler(timer_elapsed);
+				while(timer_count_seconds < 5);
+				print("Elapsed 5 seconds");
+	    		}
+		}
+	}else{
+	    print("Invalid params\nusage: timer [ -h | --help ] | [-s | --sleep]\n");
+      }
+
+
+}
+
+
 void shell_commands_parser(){
       char arg[SHELL_CMD_MAX_LENGHT];
       int argc = strargs( command_buffer );
@@ -177,6 +215,11 @@ void shell_commands_parser(){
       
       if( strcmp( arg, SHELL_CMD_FAULT) ){
     	  shell_cmd_fault();
+    	  return;
+      }
+     
+     if( strcmp( arg, SHELL_CMD_TIMER) ){
+    	  shell_cmd_timer(argc);
     	  return;
       }
 
