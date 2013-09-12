@@ -167,6 +167,7 @@ void shell_cmd_timer(int argc){
 	    	strarg( command_buffer, arg, 1 );
 	    	if( strcmp( arg, "-h") || strcmp( arg, "--help" ) ) {
 			print("params\nusage: timer [ -h | --help ] | [-s | --sleep]\n");
+			return;
 	    	}
 	}else if( argc == 3 ){
 	    	strarg( command_buffer, arg, 1 );
@@ -176,13 +177,11 @@ void shell_cmd_timer(int argc){
 				register_timer_handler(timer_elapsed);
 				while(timer_count_seconds < 5);
 				print("Elapsed 5 seconds");
+				return;
 	    		}
 		}
-	}else{
-	    print("Invalid params\nusage: timer [ -h | --help ] | [-s | --sleep]\n");
-      }
-
-
+	}
+	print("Invalid params\nusage: timer [ -h | --help ] | [-s | --sleep]\n");
 }
 
 
